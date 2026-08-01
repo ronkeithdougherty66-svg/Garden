@@ -1,0 +1,113 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(160deg, #071b3a, #123f5f, #315f4c);
+  color: #132033;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+}
+
+.app { width: 100%; max-width: 540px; }
+.screen { display: none; }
+.screen.active { display: block; animation: placeArrives 600ms ease both; }
+
+.card {
+  background: #fffdf7;
+  border-radius: 26px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+}
+
+.splash-card { padding-top: 28px; }
+.garden-logo { width: 118px; height: 118px; border-radius: 28px; box-shadow: 0 10px 24px rgba(0,0,0,.18); margin-bottom: 14px; }
+.logo { font-size: 58px; margin-bottom: 10px; }
+
+h1 { margin: 0 0 10px; font-size: 38px; color: #123f5f; }
+h2 { margin: 8px 0 18px; font-size: 26px; color: #123f5f; }
+.subtitle { margin: 0 0 20px; color: #55705f; font-size: 18px; font-style: italic; }
+p { font-size: 18px; line-height: 1.4; }
+.byline { margin: 18px 0 0; color: #5f6f82; font-size: 15px; }
+.birthday-whisper { margin: 12px 0 8px; color: #8b5060; font-size: 20px; font-weight: bold; }
+.motto { margin: 24px 0 16px; font-size: 15px; color: #5f6f82; font-style: italic; }
+.welcome-whisper { color: #2d6a4f; font-style: italic; }
+.history-note { margin-top: 18px; font-size: 12px; color: #7b8794; }
+.peek { font-size: 22px; color: #8b5060; font-weight: bold; }
+
+input {
+  width: 100%; margin-top: 14px; padding: 16px; font-size: 22px; text-align: center;
+  border: 2px solid #2d6a4f; border-radius: 14px; outline: none; background: #fff;
+}
+input:focus { border-color: #d6a43a; box-shadow: 0 0 0 3px rgba(214, 164, 58, 0.25); }
+
+button {
+  width: 100%; margin-top: 22px; padding: 16px 18px; border: none; border-radius: 16px;
+  background: #2d6a4f; color: white; font-size: 20px; font-weight: bold; cursor: pointer;
+  transition: transform 180ms ease, opacity 250ms ease, background 250ms ease;
+}
+button:active { transform: scale(0.97); }
+button:disabled { cursor: default; }
+.hidden { display: none !important; }
+.secondary-button { margin-top: 12px; background: transparent; color: #2d6a4f; border: 1px solid #9fbea9; box-shadow: none; opacity: 0.9; font-size: 16px; }
+.secondary-button:hover { opacity: 1; }
+
+.garden-stage { background: linear-gradient(180deg, #edf8ef, #dff1df); border: 2px solid #c8dfc7; border-radius: 24px; padding: 20px; margin: 18px 0 24px; }
+.garden-message { font-size: 15px; color: #55705f; margin-bottom: 12px; font-style: italic; transition: opacity 500ms ease, transform 500ms ease; }
+.garden-message.resting { opacity: 0; transform: translateY(-5px); }
+.bloom-art { min-height: 90px; font-size: 64px; display: flex; justify-content: center; align-items: center; transition: transform 900ms ease, opacity 700ms ease; }
+.bloom-art.receiving { transform: scale(1.08); }
+.bloom-art.blooming { transform: scale(1.18); }
+
+.word-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 24px 0; }
+.letter-tile { width: 42px; height: 52px; background: #fffaf0; border: 2px solid #d8c99b; border-bottom: 5px solid #2d6a4f; border-radius: 10px; font-size: 30px; font-weight: bold; color: #123f5f; display: flex; justify-content: center; align-items: center; }
+.space-tile { width: 24px; }
+
+.status-row { display: flex; justify-content: space-between; gap: 12px; margin: 22px 0; }
+.status-row > div { flex: 1; background: #eef7ef; border-radius: 16px; padding: 14px 10px; }
+#wrongLetters { color: #7b8794; font-weight: bold; margin-top: 8px; }
+#guessesLeft { color: #2d6a4f; font-weight: bold; font-size: 24px; margin-top: 8px; }
+.keyboard { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 20px; }
+.key { margin: 0; padding: 12px 0; border-radius: 12px; font-size: 18px; background: #3f7d5a; }
+.key.used { background: #c5cdc8; color: #6e7771; opacity: .72; }
+#resultTitle { font-size: 32px; }
+#resultMessage { font-size: 20px; }
+.win { color: #2d6a4f; }
+.lose { color: #55705f; }
+
+.identity-card { position: relative; overflow: hidden; }
+.identity-symbol { font-size: 58px; margin-bottom: 18px; transform: scale(1); opacity: 1; transition: transform 900ms ease, opacity 700ms ease; }
+.identity-symbol.receiving { transform: scale(1.08); }
+.identity-symbol.blooming { transform: scale(1.16); }
+.identity-whisper, #identityQuestion { transition: opacity 500ms ease, transform 500ms ease; }
+#identityNameInput, #identityContinueButton { transition: opacity 450ms ease, transform 450ms ease; }
+.identity-controls-resting { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.identity-message-resting { opacity: 0; transform: translateY(-5px); }
+
+.garden-transition { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(circle at center, rgba(233,245,229,.98), rgba(116,155,137,.98)); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 600ms ease, visibility 600ms ease; }
+.garden-transition.active { opacity: 1; visibility: visible; pointer-events: auto; }
+.transition-content { max-width: 420px; text-align: center; opacity: 0; transform: translateY(12px); transition: opacity 500ms ease 150ms, transform 700ms ease 150ms; }
+.garden-transition.active .transition-content { opacity: 1; transform: translateY(0); }
+.transition-art { margin-bottom: 18px; font-size: clamp(3.5rem, 15vw, 6rem); animation: gardenBreathe 2400ms ease-in-out infinite; }
+.transition-whisper { margin: 0; font-size: 1.1rem; line-height: 1.6; }
+
+@keyframes gardenBreathe { 0%,100% { transform: scale(.96); } 50% { transform: scale(1.04); } }
+@keyframes placeArrives { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}
+
+@media (max-width: 420px) {
+  h1 { font-size: 32px; }
+  h2 { font-size: 24px; }
+  .card { padding: 24px 16px; }
+  .keyboard { grid-template-columns: repeat(5, 1fr); }
+  .letter-tile { width: 36px; height: 48px; font-size: 26px; }
+  .bloom-art { font-size: 56px; }
+  .garden-logo { width: 100px; height: 100px; }
+}
