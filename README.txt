@@ -64,3 +64,10 @@ This prompts installed copies to refresh their cached files.
 HAPPY BIRTHDAY, TRACY
 ---------------------
 This Garden was lovingly cultivated to offer welcome, smiles, and a peaceful place to stay awhile.
+
+
+FULL-SCREEN GARDEN BLOOM
+------------------------
+When a planted word is completed, the Garden entrance now fades across the
+whole screen for a few peaceful seconds before the Reflection Place appears.
+The image is stored locally and works offline.

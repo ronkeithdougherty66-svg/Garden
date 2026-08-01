@@ -125,6 +125,12 @@ const transitionArt =
 
 const transitionWhisper =
   document.getElementById("transitionWhisper");
+
+const gardenCelebration =
+  document.getElementById("gardenCelebration");
+
+const gardenCelebrationWhisper =
+  document.getElementById("gardenCelebrationWhisper");
 /*
 =====================================
 Identity Place Elements
@@ -572,6 +578,18 @@ function plantWord() {
 }
 
 
+function showGardenCelebration(message) {
+  gardenCelebrationWhisper.textContent = message;
+  gardenCelebration.classList.add("active");
+  gardenCelebration.setAttribute("aria-hidden", "false");
+}
+
+function hideGardenCelebration() {
+  gardenCelebration.classList.remove("active");
+  gardenCelebration.setAttribute("aria-hidden", "true");
+}
+
+
 /*
 =====================================
 The Garden Blooms
@@ -736,14 +754,27 @@ function completeGarden(bloomed) {
       gardenMessage.classList.remove("resting");
     }, 1200);
 
+    /*
+    The completed Garden opens across the whole screen.
+    Let the visitor enjoy the entrance before Reflection.
+    */
+
+    setTimeout(() => {
+      showGardenCelebration(
+        `${gardenKeeper.gardener}, look what you helped bloom.`
+      );
+    }, 2500);
+
     setTimeout(() => {
       resultTitle.textContent = "The Garden bloomed.";
       resultTitle.className = "win";
       resultMessage.textContent =
         randomMessage(bloomCelebrations);
       bloomArt.classList.remove("blooming");
+
       visit("reflection");
-    }, 3800);
+      hideGardenCelebration();
+    }, 5600);
 
     return;
   }
