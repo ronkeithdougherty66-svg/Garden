@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2d6a4f" />
+  <meta name="description" content="A peaceful Garden of Words, lovingly cultivated for Tracy." />
+
+  <title>Tracy's Garden</title>
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main class="app">
+
+    <section id="splashScreen" class="screen active">
+      <div class="card splash-card">
+        <img class="garden-logo" src="./icons/icon-192.png" alt="An open gate into Tracy's Garden" />
+
+        <h1>Tracy's Garden</h1>
+        <p class="subtitle">A Garden That Grows With Guesses</p>
+
+        <p class="birthday-whisper">Happy Birthday, Tracy ❤️</p>
+
+        <p class="byline">Lovingly cultivated by</p>
+        <h2>Sol &amp; Ron</h2>
+
+        <p class="motto">
+          Built with care. Polished with patience. Made beautiful to share.
+        </p>
+
+        <p id="welcomeWhisper" class="welcome-whisper">
+          We're so glad you're here.
+        </p>
+
+        <button id="beginButton">Enter the Garden</button>
+
+        <button id="installGardenButton" class="secondary-button hidden">
+          Install Tracy's Garden
+        </button>
+
+        <button id="newGardenersButton" class="secondary-button hidden">
+          Welcome Someone New
+        </button>
+
+        <p class="history-note">Bloomed from the original project: Hangman Pro</p>
+      </div>
+    </section>
+
+    <section id="identityScreen" class="screen">
+      <div class="card identity-card">
+        <div class="identity-symbol">🌿</div>
+
+        <h2 id="identityQuestion">May I know the name of the Planter?</h2>
+
+        <p id="identityWhisper" class="identity-whisper">
+          Every garden begins with someone who lovingly plants it.
+        </p>
+
+        <input
+          id="identityNameInput"
+          type="text"
+          autocomplete="name"
+          spellcheck="false"
+          placeholder="Planter's Name"
+          maxlength="30"
+        />
+
+        <button id="identityContinueButton">Continue</button>
+      </div>
+    </section>
+
+    <section id="setupScreen" class="screen">
+      <div class="card">
+        <h2>Plant a Word</h2>
+        <p id="plantingPrompt">Plant a word or phrase for someone you love to discover.</p>
+
+        <input
+          id="secretWordInput"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Word or phrase"
+          maxlength="40"
+        />
+
+        <p id="wordPrivacyHint" class="word-privacy-hint">
+          Check the spelling, then conceal the word before passing the phone.
+        </p>
+
+        <button id="concealWordButton" class="secondary-button">
+          Conceal the Word
+        </button>
+
+        <button id="startGameButton" disabled>
+          Plant the Word
+        </button>
+      </div>
+    </section>
+
+    <section id="passScreen" class="screen">
+      <div class="card">
+        <h2>The Word Is Planted</h2>
+        <p id="passingMessage">Hand the phone to the one who will help it bloom.</p>
+        <p class="peek">No peeking 😊</p>
+
+        <button id="continueButton">Begin Blooming</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="card">
+        <h2>Help the Garden Bloom</h2>
+
+        <div id="gardenStage" class="garden-stage">
+          <div id="gardenMessage" class="garden-message">
+            Every correct letter helps the Garden bloom.
+          </div>
+
+          <div id="bloomArt" class="bloom-art">🌱</div>
+        </div>
+
+        <div id="wordDisplay" class="word-display"></div>
+
+        <div class="status-row">
+          <div>
+            <strong>Letters Resting</strong>
+            <div id="wrongLetters">None</div>
+          </div>
+
+          <div>
+            <strong>Growth Remaining</strong>
+            <div id="guessesLeft">6</div>
+          </div>
+        </div>
+
+        <div id="keyboard" class="keyboard"></div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="card">
+        <h2 id="resultTitle">The Garden bloomed.</h2>
+        <p id="resultMessage"></p>
+        <p id="nextRoundMessage" class="next-round-message"></p>
+
+        <button id="playAgainButton">Return to the Garden</button>
+        <button id="stepOutButton" class="secondary-button">Step Out of the Garden</button>
+      </div>
+    </section>
+
+    <div id="gardenCelebration" class="garden-celebration" aria-hidden="true">
+      <div class="garden-celebration-scene">
+        <img
+          src="./icons/icon-512.png"
+          alt="The open gate of Tracy's Garden surrounded by flowers"
+          class="garden-celebration-art"
+        />
+        <div class="garden-celebration-glow"></div>
+        <p id="gardenCelebrationWhisper" class="garden-celebration-whisper">
+          Look what you helped bloom.
+        </p>
+      </div>
+    </div>
+
+    <div id="gardenTransition" class="garden-transition" aria-hidden="true">
+      <div class="transition-content">
+        <div id="transitionArt" class="transition-art">🌿</div>
+        <p id="transitionWhisper" class="transition-whisper">
+          The Garden is opening its paths.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
