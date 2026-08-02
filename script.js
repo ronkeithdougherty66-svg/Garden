@@ -23,7 +23,7 @@ The Garden remembers its caretakers.
 */
 
 const gardenKeeper = {
-  gardenName: "Tracy's Garden",
+  gardenName: "Yahweh's Garden",
   season: "The Planting",
 
   planter: "",
@@ -393,7 +393,7 @@ function prepareIdentityQuestion() {
 
   if (identityStep === "planter") {
     identityQuestion.textContent =
-      "May I know your name?";
+      "May I know the Planter's name?";
 
     identityWhisper.textContent =
       "Every garden begins with someone who lovingly plants it.";
@@ -763,7 +763,7 @@ function completeGarden(bloomed) {
       showGardenCelebration(
         `${gardenKeeper.gardener}, look what you helped bloom.`
       );
-    }, 2500);
+    }, 3500);
 
     setTimeout(() => {
       resultTitle.textContent = "The Garden bloomed.";
@@ -774,7 +774,7 @@ function completeGarden(bloomed) {
 
       visit("reflection");
       hideGardenCelebration();
-    }, 5600);
+    }, 6600);
 
     return;
   }
