@@ -1,7 +1,7 @@
 /*
 Project History:
 Formerly Hangman Pro.
-Now: Yahweh's Garden.
+Now: Tracy's Garden.
 
 Designed by Sol & Ron
 Dedicated to Tracy Love ❤️
@@ -23,7 +23,7 @@ The Garden remembers its caretakers.
 */
 
 const gardenKeeper = {
-  gardenName: "Yahweh's Garden",
+  gardenName: "Tracy's Garden",
   season: "The Planting",
 
   planter: "",
@@ -104,6 +104,21 @@ const beginButton =
 
 const startGameButton =
   document.getElementById("startGameButton");
+
+const concealWordButton =
+  document.getElementById("concealWordButton");
+
+const wordPrivacyHint =
+  document.getElementById("wordPrivacyHint");
+
+const plantingPrompt =
+  document.getElementById("plantingPrompt");
+
+const nextRoundMessage =
+  document.getElementById("nextRoundMessage");
+
+const installGardenButton =
+  document.getElementById("installGardenButton");
 
 const continueButton =
   document.getElementById("continueButton");
@@ -198,6 +213,9 @@ let gameActive = false;
 
 let identityStep = "planter";
 let identityPauseActive = false;
+let wordIsConcealed = false;
+let roundReadyToRotate = false;
+let deferredInstallPrompt = null;
 
 
 /*
@@ -393,22 +411,22 @@ function prepareIdentityQuestion() {
 
   if (identityStep === "planter") {
     identityQuestion.textContent =
-      "May I know the Planter's name?";
+      "May I know the name of the Planter?";
 
     identityWhisper.textContent =
       "Every garden begins with someone who lovingly plants it.";
 
     identityNameInput.placeholder =
-      "Planter's name";
+      "Planter's Name";
   } else {
     identityQuestion.textContent =
-      "And who will help the Garden bloom?";
+      "May I know the name of the Gardener?";
 
     identityWhisper.textContent =
-      "The Garden would be glad to know their name.";
+      "The Garden would be glad to know who will help it bloom.";
 
     identityNameInput.placeholder =
-      "Gardener's name";
+      "Gardener's Name";
   }
 
   /*
@@ -527,7 +545,7 @@ function receiveGardener(name) {
     identityContinueButton.classList.remove("identity-controls-resting");
 
     enterPlantingPlace();
-  }, 3600);
+  }, 5200);
 }
 
 
@@ -537,33 +555,85 @@ Planting Place
 =====================================
 */
 
-function enterPlantingPlace() {
-  visit("planting");
+function updatePlantingPrompt() {
+  if (gardenKeeper.planter && gardenKeeper.gardener) {
+    plantingPrompt.textContent =
+      `${gardenKeeper.planter}, plant a word or phrase for ` +
+      `${gardenKeeper.gardener} to help bloom.`;
+  } else {
+    plantingPrompt.textContent =
+      "Plant a word or phrase for someone you love to discover.";
+  }
+}
 
+function resetSecretWordEntry() {
   secretWordInput.value = "";
+  secretWordInput.type = "text";
+  secretWordInput.placeholder = "Word or phrase";
+  wordIsConcealed = false;
+
+  concealWordButton.textContent = "Conceal the Word";
+  wordPrivacyHint.textContent =
+    "Check the spelling, then conceal the word before passing the phone.";
+
+  startGameButton.disabled = true;
+}
+
+function enterPlantingPlace() {
+  updatePlantingPrompt();
+  resetSecretWordEntry();
+  visit("planting");
 
   setTimeout(() => {
     secretWordInput.focus();
   }, 400);
 }
 
+function toggleWordPrivacy() {
+  const hasWord = cleanWord(secretWordInput.value).length > 0;
+
+  if (!hasWord) {
+    wordPrivacyHint.textContent =
+      "Plant the word first, then the Garden can conceal it.";
+    secretWordInput.focus();
+    return;
+  }
+
+  wordIsConcealed = !wordIsConcealed;
+  secretWordInput.type = wordIsConcealed ? "password" : "text";
+
+  if (wordIsConcealed) {
+    concealWordButton.textContent = "Show the Word Again";
+    wordPrivacyHint.textContent =
+      "The word is safely concealed and ready to be planted.";
+    startGameButton.disabled = false;
+  } else {
+    concealWordButton.textContent = "Conceal the Word";
+    wordPrivacyHint.textContent =
+      "Check the spelling, then conceal the word before passing the phone.";
+    startGameButton.disabled = true;
+    secretWordInput.focus();
+  }
+}
+
 function plantWord() {
-  const cleaned =
-    cleanWord(secretWordInput.value);
+  const cleaned = cleanWord(secretWordInput.value);
 
   if (!cleaned) {
-    alert("Please enter a word or phrase.");
+    wordPrivacyHint.textContent =
+      "A word or phrase is waiting to be planted.";
+    secretWordInput.focus();
+    return;
+  }
+
+  if (!wordIsConcealed) {
+    wordPrivacyHint.textContent =
+      "Please conceal the word before passing the phone.";
     return;
   }
 
   secretWord = cleaned;
-
   visit("passing");
-
-  /*
-  Build this message safely so names are treated
-  as text rather than HTML.
-  */
 
   passingMessage.replaceChildren(
     document.createTextNode(
@@ -735,6 +805,8 @@ function checkGardenState() {
 
 function completeGarden(bloomed) {
   gameActive = false;
+  roundReadyToRotate = true;
+  showNextRoundRoles();
 
   if (bloomed) {
     bloomArt.classList.add("receiving");
@@ -763,7 +835,7 @@ function completeGarden(bloomed) {
       showGardenCelebration(
         `${gardenKeeper.gardener}, look what you helped bloom.`
       );
-    }, 3500);
+    }, 2500);
 
     setTimeout(() => {
       resultTitle.textContent = "The Garden bloomed.";
@@ -774,7 +846,7 @@ function completeGarden(bloomed) {
 
       visit("reflection");
       hideGardenCelebration();
-    }, 6600);
+    }, 5600);
 
     return;
   }
@@ -819,10 +891,27 @@ function completeGarden(bloomed) {
 }
 
 
+function prepareNextRound() {
+  if (!roundReadyToRotate) return;
+
+  const previousPlanter = gardenKeeper.planter;
+  gardenKeeper.planter = gardenKeeper.gardener;
+  gardenKeeper.gardener = previousPlanter;
+  roundReadyToRotate = false;
+  rememberGarden();
+}
+
+function showNextRoundRoles() {
+  nextRoundMessage.textContent =
+    `Next round, ${gardenKeeper.gardener} will plant and ` +
+    `${gardenKeeper.planter} will help the Garden bloom.`;
+}
+
 function welcomeNewGardeners() {
   gardenKeeper.planter = "";
   gardenKeeper.gardener = "";
   gardenKeeper.bloomStage = 0;
+  roundReadyToRotate = false;
   rememberGarden();
 
   prepareWelcome();
@@ -830,6 +919,7 @@ function welcomeNewGardeners() {
 }
 
 function stepOutOfGarden() {
+  prepareNextRound();
   gardenKeeper.lastVisit = new Date().toISOString();
   rememberGarden();
   prepareWelcome();
@@ -843,6 +933,8 @@ Return to the Garden
 */
 
 function returnToGarden() {
+  prepareNextRound();
+
   secretWord = "";
   displayWord = [];
   restingLetters = [];
@@ -865,6 +957,7 @@ function returnToGarden() {
   gardenMessage.textContent =
     "Every correct letter helps the garden bloom.";
 
+  nextRoundMessage.textContent = "";
   enterPlantingPlace();
 }
 
@@ -894,6 +987,23 @@ identityNameInput.addEventListener(
   }
 );
 
+concealWordButton.addEventListener(
+  "click",
+  toggleWordPrivacy
+);
+
+secretWordInput.addEventListener(
+  "input",
+  () => {
+    if (wordIsConcealed) {
+      wordIsConcealed = false;
+      secretWordInput.type = "text";
+      concealWordButton.textContent = "Conceal the Word";
+      startGameButton.disabled = true;
+    }
+  }
+);
+
 startGameButton.addEventListener(
   "click",
   plantWord
@@ -919,6 +1029,26 @@ stepOutButton.addEventListener(
   stepOutOfGarden
 );
 
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installGardenButton.classList.remove("hidden");
+});
+
+installGardenButton.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) return;
+
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  installGardenButton.classList.add("hidden");
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  installGardenButton.classList.add("hidden");
+});
 
 /*
 =====================================

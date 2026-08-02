@@ -230,3 +230,32 @@ A Glimpse Through the Garden Gate
     transition-duration: 1ms;
   }
 }
+
+/*
+=====================================
+Word Privacy and Changing Roles
+=====================================
+*/
+
+.word-privacy-hint {
+  margin: 12px 4px 0;
+  color: #55705f;
+  font-size: 14px;
+  font-style: italic;
+}
+
+button:disabled {
+  background: #aab8ae;
+  color: #eef3ef;
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.next-round-message {
+  min-height: 1.4em;
+  margin: 18px 0 0;
+  color: #55705f;
+  font-size: 16px;
+  font-style: italic;
+}

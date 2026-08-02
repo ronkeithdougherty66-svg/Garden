@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#2d6a4f" />
   <meta name="description" content="A peaceful Garden of Words, lovingly cultivated for Tracy." />
 
-  <title>Yahweh's Garden</title>
+  <title>Tracy's Garden</title>
 
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
@@ -20,9 +20,9 @@
 
     <section id="splashScreen" class="screen active">
       <div class="card splash-card">
-        <img class="garden-logo" src="icons/icon-192.png" alt="An open gate into Yahweh's Garden" />
+        <img class="garden-logo" src="./icons/icon-192.png" alt="An open gate into Tracy's Garden" />
 
-        <h1>Yahweh's Garden</h1>
+        <h1>Tracy's Garden</h1>
         <p class="subtitle">A Garden That Grows With Guesses</p>
 
         <p class="birthday-whisper">Happy Birthday, Tracy ❤️</p>
@@ -39,6 +39,10 @@
         </p>
 
         <button id="beginButton">Enter the Garden</button>
+
+        <button id="installGardenButton" class="secondary-button hidden">
+          Install Tracy's Garden
+        </button>
 
         <button id="newGardenersButton" class="secondary-button hidden">
           Welcome Someone New
@@ -74,18 +78,28 @@
     <section id="setupScreen" class="screen">
       <div class="card">
         <h2>Plant a Word</h2>
-        <p>Plant a word or phrase for someone you love to discover.</p>
+        <p id="plantingPrompt">Plant a word or phrase for someone you love to discover.</p>
 
         <input
           id="secretWordInput"
-          type="password"
+          type="text"
           autocomplete="off"
           spellcheck="false"
-          placeholder="Secret word"
+          placeholder="Word or phrase"
           maxlength="40"
         />
 
-        <button id="startGameButton">Plant the Word</button>
+        <p id="wordPrivacyHint" class="word-privacy-hint">
+          Check the spelling, then conceal the word before passing the phone.
+        </p>
+
+        <button id="concealWordButton" class="secondary-button">
+          Conceal the Word
+        </button>
+
+        <button id="startGameButton" disabled>
+          Plant the Word
+        </button>
       </div>
     </section>
 
@@ -133,6 +147,7 @@
       <div class="card">
         <h2 id="resultTitle">The Garden bloomed.</h2>
         <p id="resultMessage"></p>
+        <p id="nextRoundMessage" class="next-round-message"></p>
 
         <button id="playAgainButton">Return to the Garden</button>
         <button id="stepOutButton" class="secondary-button">Step Out of the Garden</button>
@@ -142,7 +157,7 @@
     <div id="gardenCelebration" class="garden-celebration" aria-hidden="true">
       <div class="garden-celebration-scene">
         <img
-          src="icons/icon-512.png"
+          src="./icons/icon-512.png"
           alt="The open gate of Tracy's Garden surrounded by flowers"
           class="garden-celebration-art"
         />
@@ -163,6 +178,6 @@
     </div>
   </main>
 
-  <script src="script.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
