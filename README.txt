@@ -64,3 +64,11 @@ NEW IN THIS EDITION
 - Offline caching and standalone display
 
 Happy Birthday, Tracy. We're so glad you're here.
+
+
+SEASON ONE EXPANDED FEATURES
+- Words wrap only between whole words, never in the middle of a word.
+- Layout is fitted to the phone viewport to avoid page scrolling.
+- Celebration grows from a small Garden image to full screen, rests for about three seconds, then fades.
+- Expanded Garden whisper collection.
+- Solo Garden mode: the visitor enters their name and names the unseen Planter; the Garden then chooses mystery words.

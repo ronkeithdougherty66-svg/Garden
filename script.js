@@ -28,6 +28,9 @@ const gardenKeeper = {
 
   planter: "",
   gardener: "",
+  soloPlanter: "",
+  soloGardener: "",
+  mode: "together",
 
   bloomStage: 0,
   hasVisited: false,
@@ -101,6 +104,9 @@ const passingMessage =
 
 const beginButton =
   document.getElementById("beginButton");
+
+const soloGardenButton =
+  document.getElementById("soloGardenButton");
 
 const startGameButton =
   document.getElementById("startGameButton");
@@ -216,6 +222,7 @@ let identityPauseActive = false;
 let wordIsConcealed = false;
 let roundReadyToRotate = false;
 let deferredInstallPrompt = null;
+let soloWordIndex = -1;
 
 
 /*
@@ -260,7 +267,50 @@ const gardenWhispers = [
   "One more guess... the petals are starting to unfold.",
   "A hidden bud is waiting to open.",
   "Every success brings a splash of life.",
-  "The garden grows stronger with your help."
+  "The garden grows stronger with your help.",
+  "A new petal has found the light.",
+  "The Garden is opening one quiet color at a time.",
+  "Your patience is becoming part of the bloom.",
+  "A little more life has entered the Garden.",
+  "The next blossom is closer than it was before.",
+  "The roots are listening, and the flowers are answering.",
+  "Every discovered letter brings the Garden nearer to spring.",
+  "A gentle success has warmed the soil.",
+  "Another corner of the Garden has awakened.",
+  "The Garden is grateful for every careful guess.",
+  "A hidden color is beginning to show.",
+  "The path ahead is brightening.",
+  "Another leaf has turned toward the sun.",
+  "The Garden is becoming more itself.",
+  "Quiet growth is still beautiful growth.",
+  "A small discovery can open an entire flower.",
+  "The bloom is gathering courage.",
+  "The Garden is smiling in its own quiet way.",
+  "One more piece of beauty has come home.",
+  "The flowers are making room for what comes next."
+];
+
+const soloGardenWords = [
+  "SERENITY",
+  "RESTORATION",
+  "HEALING",
+  "WELCOME HOME",
+  "PEACEFUL WATERS",
+  "MORNING MERCIES",
+  "GENTLE ANSWER",
+  "GARDEN PATH",
+  "LIVING WATER",
+  "OLIVE BRANCH",
+  "QUIET JOY",
+  "FAITHFUL LOVE",
+  "NEW BEGINNING",
+  "BEAUTY AWAITS",
+  "STAY A WHILE",
+  "BLOSSOM",
+  "BUTTERFLY",
+  "SUNFLOWER",
+  "PEACE BE STILL",
+  "JOY COMES IN THE MORNING"
 ];
 
 const bloomCelebrations = [
@@ -346,24 +396,32 @@ The Garden Gate
 */
 
 function prepareWelcome() {
-  const gardenKnowsItsCaretakers =
+  const gardenKnowsTogetherVisitors =
     gardenKeeper.planter && gardenKeeper.gardener;
+  const gardenKnowsSoloVisitor =
+    gardenKeeper.soloGardener && gardenKeeper.soloPlanter;
 
-  if (gardenKnowsItsCaretakers) {
+  if (gardenKnowsTogetherVisitors) {
     welcomeWhisper.textContent =
       `Welcome back, ${gardenKeeper.planter} and ${gardenKeeper.gardener}. ` +
       "We're so glad you're here.";
+  } else if (gardenKnowsSoloVisitor) {
+    welcomeWhisper.textContent =
+      `Welcome back, ${gardenKeeper.soloGardener}. ` +
+      `${gardenKeeper.soloPlanter} has kept a mystery seed for you.`;
+  } else {
+    welcomeWhisper.textContent = "We're so glad you're here.";
+  }
 
+  if (gardenKnowsTogetherVisitors || gardenKnowsSoloVisitor) {
     newGardenersButton.classList.remove("hidden");
   } else {
-    welcomeWhisper.textContent =
-      "We're so glad you're here.";
-
     newGardenersButton.classList.add("hidden");
   }
 }
 
 function beginGarden() {
+  gardenKeeper.mode = "together";
   gardenKeeper.hasVisited = true;
   gardenKeeper.lastVisit = new Date().toISOString();
 
@@ -385,6 +443,55 @@ function beginGarden() {
   enterPlantingPlace();
 }
 
+
+function beginSoloGarden() {
+  gardenKeeper.mode = "solo";
+  gardenKeeper.hasVisited = true;
+  gardenKeeper.lastVisit = new Date().toISOString();
+  rememberGarden();
+
+  if (!gardenKeeper.soloGardener || !gardenKeeper.soloPlanter) {
+    identityStep = gardenKeeper.soloGardener
+      ? "soloPlanter"
+      : "soloGardener";
+    identityPauseActive = false;
+    visit("identity");
+    prepareIdentityQuestion();
+    return;
+  }
+
+  prepareSoloRound();
+}
+
+function chooseSoloWord() {
+  if (soloGardenWords.length === 1) return soloGardenWords[0];
+
+  let nextIndex;
+  do {
+    nextIndex = Math.floor(Math.random() * soloGardenWords.length);
+  } while (nextIndex === soloWordIndex);
+
+  soloWordIndex = nextIndex;
+  return soloGardenWords[nextIndex];
+}
+
+function prepareSoloRound() {
+  secretWord = chooseSoloWord();
+  wordIsConcealed = true;
+
+  passingMessage.replaceChildren(
+    document.createTextNode(
+      `${gardenKeeper.soloPlanter} has planted a word for you.`
+    ),
+    document.createElement("br"),
+    document.createElement("br"),
+    document.createTextNode(
+      `${gardenKeeper.soloGardener}, the Garden is ready to bloom with you. 🌸`
+    )
+  );
+
+  visit("passing");
+}
 
 /*
 =====================================
@@ -412,21 +519,27 @@ function prepareIdentityQuestion() {
   if (identityStep === "planter") {
     identityQuestion.textContent =
       "May I know the name of the Planter?";
-
     identityWhisper.textContent =
       "Every garden begins with someone who lovingly plants it.";
-
-    identityNameInput.placeholder =
-      "Planter's Name";
-  } else {
+    identityNameInput.placeholder = "Planter's Name";
+  } else if (identityStep === "gardener") {
     identityQuestion.textContent =
       "May I know the name of the Gardener?";
-
     identityWhisper.textContent =
       "The Garden would be glad to know who will help it bloom.";
-
-    identityNameInput.placeholder =
-      "Gardener's Name";
+    identityNameInput.placeholder = "Gardener's Name";
+  } else if (identityStep === "soloGardener") {
+    identityQuestion.textContent =
+      "May I know your name?";
+    identityWhisper.textContent =
+      "The Garden is glad you chose to spend some time here.";
+    identityNameInput.placeholder = "Your Name";
+  } else {
+    identityQuestion.textContent =
+      "Who would you like to plant the words?";
+    identityWhisper.textContent =
+      "You may name a friend, the Garden, or anyone meaningful to you.";
+    identityNameInput.placeholder = "Planter's Name";
   }
 
   /*
@@ -455,8 +568,12 @@ function continueIdentity() {
 
   if (identityStep === "planter") {
     receivePlanter(enteredName);
-  } else {
+  } else if (identityStep === "gardener") {
     receiveGardener(enteredName);
+  } else if (identityStep === "soloGardener") {
+    receiveSoloGardener(enteredName);
+  } else {
+    receiveSoloPlanter(enteredName);
   }
 }
 
@@ -545,7 +662,78 @@ function receiveGardener(name) {
     identityContinueButton.classList.remove("identity-controls-resting");
 
     enterPlantingPlace();
-  }, 5200);
+  }, 6500);
+}
+
+function receiveSoloGardener(name) {
+  gardenKeeper.soloGardener = name;
+  rememberGarden();
+  identityPauseActive = true;
+
+  const identitySymbol = document.querySelector(".identity-symbol");
+  identityNameInput.classList.add("identity-controls-resting");
+  identityContinueButton.classList.add("identity-controls-resting");
+  identitySymbol.classList.add("receiving");
+
+  setTimeout(() => {
+    identityQuestion.classList.add("identity-message-resting");
+    identityWhisper.classList.add("identity-message-resting");
+  }, 400);
+
+  setTimeout(() => {
+    identitySymbol.textContent = "🌸";
+    identitySymbol.classList.remove("receiving");
+    identitySymbol.classList.add("blooming");
+    identityQuestion.textContent = `We're so glad you're here, ${name}.`;
+    identityWhisper.textContent = "There is no hurry here.";
+    identityQuestion.classList.remove("identity-message-resting");
+    identityWhisper.classList.remove("identity-message-resting");
+  }, 1000);
+
+  setTimeout(() => {
+    identityStep = "soloPlanter";
+    identityPauseActive = false;
+    identitySymbol.textContent = "🌿";
+    identitySymbol.classList.remove("blooming");
+    identityNameInput.classList.remove("identity-controls-resting");
+    identityContinueButton.classList.remove("identity-controls-resting");
+    prepareIdentityQuestion();
+  }, 4200);
+}
+
+function receiveSoloPlanter(name) {
+  gardenKeeper.soloPlanter = name;
+  rememberGarden();
+  identityPauseActive = true;
+
+  const identitySymbol = document.querySelector(".identity-symbol");
+  identityNameInput.classList.add("identity-controls-resting");
+  identityContinueButton.classList.add("identity-controls-resting");
+  identitySymbol.classList.add("receiving");
+
+  setTimeout(() => {
+    identityQuestion.classList.add("identity-message-resting");
+    identityWhisper.classList.add("identity-message-resting");
+  }, 400);
+
+  setTimeout(() => {
+    identitySymbol.textContent = "🌱";
+    identitySymbol.classList.remove("receiving");
+    identitySymbol.classList.add("blooming");
+    identityQuestion.textContent = `${name} will plant the words.`;
+    identityWhisper.textContent = "A mystery seed is already waiting.";
+    identityQuestion.classList.remove("identity-message-resting");
+    identityWhisper.classList.remove("identity-message-resting");
+  }, 1000);
+
+  setTimeout(() => {
+    identityPauseActive = false;
+    identitySymbol.textContent = "🌿";
+    identitySymbol.classList.remove("blooming");
+    identityNameInput.classList.remove("identity-controls-resting");
+    identityContinueButton.classList.remove("identity-controls-resting");
+    prepareSoloRound();
+  }, 4600);
 }
 
 
@@ -764,19 +952,40 @@ function updateGarden() {
 function renderWord() {
   wordDisplay.innerHTML = "";
 
-  displayWord.forEach(char => {
-    const tile =
-      document.createElement("div");
+  const availableWidth = Math.min(window.innerWidth - 72, 480);
+  const words = secretWord.split(" ");
+  let characterIndex = 0;
 
-    if (char === " ") {
-      tile.className = "space-tile";
-    } else {
+  words.forEach((word, wordIndex) => {
+    const group = document.createElement("div");
+    group.className = "word-group";
+
+    const gap = word.length > 18 ? 2 : word.length > 12 ? 4 : 6;
+    group.style.gap = `${gap}px`;
+
+    const tileSize = Math.max(8, Math.min(42,
+      Math.floor((availableWidth - gap * (word.length - 1)) / word.length)
+    ));
+
+    for (let i = 0; i < word.length; i++) {
+      const tile = document.createElement("div");
+      const char = displayWord[characterIndex];
+
       tile.className = "letter-tile";
-      tile.textContent =
-        char === "_" ? "" : char;
+      tile.style.width = `${tileSize}px`;
+      tile.style.height = `${Math.max(18, Math.round(tileSize * 1.22))}px`;
+      tile.style.fontSize = `${Math.max(8, Math.round(tileSize * 0.7))}px`;
+      tile.textContent = char === "_" ? "" : char;
+
+      group.appendChild(tile);
+      characterIndex++;
     }
 
-    wordDisplay.appendChild(tile);
+    wordDisplay.appendChild(group);
+
+    if (wordIndex < words.length - 1) {
+      characterIndex++;
+    }
   });
 
   updateStatus();
@@ -832,21 +1041,27 @@ function completeGarden(bloomed) {
     */
 
     setTimeout(() => {
+      const celebratedGardener = gardenKeeper.mode === "solo"
+        ? gardenKeeper.soloGardener
+        : gardenKeeper.gardener;
+
       showGardenCelebration(
-        `${gardenKeeper.gardener}, look what you helped bloom.`
+        `${celebratedGardener}, look what you helped bloom.`
       );
     }, 2500);
+
+    // The artwork grows for about 2.8 seconds, then rests full-screen for 3 seconds.
+    setTimeout(() => {
+      hideGardenCelebration();
+    }, 8300);
 
     setTimeout(() => {
       resultTitle.textContent = "The Garden bloomed.";
       resultTitle.className = "win";
-      resultMessage.textContent =
-        randomMessage(bloomCelebrations);
+      resultMessage.textContent = randomMessage(bloomCelebrations);
       bloomArt.classList.remove("blooming");
-
       visit("reflection");
-      hideGardenCelebration();
-    }, 5600);
+    }, 9200);
 
     return;
   }
@@ -894,14 +1109,24 @@ function completeGarden(bloomed) {
 function prepareNextRound() {
   if (!roundReadyToRotate) return;
 
-  const previousPlanter = gardenKeeper.planter;
-  gardenKeeper.planter = gardenKeeper.gardener;
-  gardenKeeper.gardener = previousPlanter;
+  if (gardenKeeper.mode === "together") {
+    const previousPlanter = gardenKeeper.planter;
+    gardenKeeper.planter = gardenKeeper.gardener;
+    gardenKeeper.gardener = previousPlanter;
+  }
+
   roundReadyToRotate = false;
   rememberGarden();
 }
 
 function showNextRoundRoles() {
+  if (gardenKeeper.mode === "solo") {
+    nextRoundMessage.textContent =
+      `${gardenKeeper.soloPlanter} has another mystery seed ready for ` +
+      `${gardenKeeper.soloGardener}.`;
+    return;
+  }
+
   nextRoundMessage.textContent =
     `Next round, ${gardenKeeper.gardener} will plant and ` +
     `${gardenKeeper.planter} will help the Garden bloom.`;
@@ -910,6 +1135,9 @@ function showNextRoundRoles() {
 function welcomeNewGardeners() {
   gardenKeeper.planter = "";
   gardenKeeper.gardener = "";
+  gardenKeeper.soloPlanter = "";
+  gardenKeeper.soloGardener = "";
+  gardenKeeper.mode = "together";
   gardenKeeper.bloomStage = 0;
   roundReadyToRotate = false;
   rememberGarden();
@@ -958,7 +1186,12 @@ function returnToGarden() {
     "Every correct letter helps the garden bloom.";
 
   nextRoundMessage.textContent = "";
-  enterPlantingPlace();
+
+  if (gardenKeeper.mode === "solo") {
+    prepareSoloRound();
+  } else {
+    enterPlantingPlace();
+  }
 }
 
 
@@ -971,6 +1204,11 @@ Garden Events
 beginButton.addEventListener(
   "click",
   beginGarden
+);
+
+soloGardenButton.addEventListener(
+  "click",
+  beginSoloGarden
 );
 
 identityContinueButton.addEventListener(
