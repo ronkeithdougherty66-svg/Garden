@@ -1,7 +1,7 @@
 /*
 Project History:
 Formerly Hangman Pro.
-Now: Tracy's Garden.
+Now: Yahweh's Garden.
 
 Designed by Sol & Ron
 Dedicated to Tracy Love ❤️
@@ -399,7 +399,7 @@ function prepareIdentityQuestion() {
       "Every garden begins with someone who lovingly plants it.";
 
     identityNameInput.placeholder =
-      "Your name";
+      "Planter's name";
   } else {
     identityQuestion.textContent =
       "And who will help the Garden bloom?";
@@ -408,7 +408,7 @@ function prepareIdentityQuestion() {
       "The Garden would be glad to know their name.";
 
     identityNameInput.placeholder =
-      "Their name";
+      "Gardener's name";
   }
 
   /*
